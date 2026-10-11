@@ -1,0 +1,99 @@
+# Embedded Workspace Skill
+
+[English](README.md) | 简体中文
+
+跨 AI Agent 的嵌入式产品工作区 Skill：初始化目录和规则，整理根目录新增资料，维护关键资料索引。适用于不同芯片、SDK、工程工具和多仓库工作区。
+
+## 安装
+
+需要 Python 3.9+，仅使用标准库。当前实际验证环境为 Windows；Linux、macOS 尚未运行验证。无需 SDK 或硬件。
+
+```bash
+git clone https://github.com/vv96ll/embedded-workspace.git
+```
+
+将仓库内的 **embedded-workspace 文件夹**复制到所用 Agent 支持的 Skill 目录，不要复制整个仓库：
+
+- Codex 默认用户目录：`~/.codex/skills/embedded-workspace/`；设置了 CODEX_HOME 时使用对应目录。
+- Claude Code：使用其文档支持的用户或项目目录，例如 `~/.claude/skills/embedded-workspace/` 或 `.claude/skills/embedded-workspace/`。
+- 其他 Agent：按工具文档安装。没有自动发现机制但支持文件读取时，可以明确要求读取 [SKILL.md](embedded-workspace/SKILL.md)。
+
+工具未刷新 Skill 列表时开启新会话。桌面聊天应用与编码 Agent 的能力可能不同，详见[适配说明](embedded-workspace/references/agent-adapters.md)。
+
+## 通过 Agent 使用
+
+- “使用 embedded-workspace 初始化指定路径的产品工作区，不创建固件工程、不移动已有资料。”
+- “整理工作区根目录新增文件，按用途归类，并更新资料索引；不确定的保留原位。”
+- “补齐这个已有工作区的规则和索引，保留现有目录名称和各 Git 仓库。”
+
+Agent 读取必要的文件内容判断分类，然后执行整理并维护索引。没有后台监控，需要你触发整理。
+
+## 初始化结果
+
+```text
+workspace/
+├── AGENTS.md
+├── README.md
+├── .gitignore
+├── requirements/   # 需求、规格、验收标准
+├── hardware/       # 硬件设计与器件资料
+├── firmware/       # 固件工程
+│   └── AGENTS.md    # 固件专用规则
+├── software/       # 配套应用与工具工程
+└── docs/           # 项目设计、接口与使用文档
+```
+
+按需增加 mechanical、assets、references、tasks、tests、scripts、releases。器件资料放 hardware/references；原厂 SDK 原包放 references/sdk；参与构建的依赖留在所属工程。已有名称和仓库边界保持原样。见[完整分类规则](embedded-workspace/references/layout-and-classification.md)。
+
+根目录 AGENTS.md 承载通用规则；firmware/AGENTS.md 承载 SDK 例程、中断、内存、类型、警告、烧录脚本和验证要求。不支持分层加载的 Agent 应明确读取两份规则。工具特定入口只在适用时生成，不会默认创建所有工具的文件。
+
+## 命令行初始化
+
+从仓库根目录运行，将路径换成实际位置，包含空格时加引号：
+
+```powershell
+python embedded-workspace/scripts/workspace_ops.py init "D:/projects/example"
+```
+
+脚本创建默认结构和缺失文件，不覆盖已有规则。合并规则、复用不同目录名称、维护索引由 Agent 完成。
+
+## 归类根目录资料
+
+准备 UTF-8 JSON 文件 plan.json，所有路径相对于工作区：
+
+```json
+[
+  {
+    "source": "元器件手册.pdf",
+    "destination": "hardware/references/器件名称/元器件手册.pdf"
+  }
+]
+```
+
+```powershell
+python embedded-workspace/scripts/workspace_ops.py move "D:/projects/example" plan.json
+python embedded-workspace/scripts/workspace_ops.py move "D:/projects/example" plan.json --apply
+```
+
+第一条预览，第二条执行。目标父目录按需创建。脚本不负责理解资料或更新 Markdown 索引，这些由 Agent 完成。脚本拒绝目录、受保护根目录文件、链接、越界路径及覆盖已有目标。
+
+## 恢复移动
+
+记录保存在 .workspace-ops/moves-<id>.json，包含文件 SHA-256。使用命令输出的实际记录路径：
+
+```powershell
+python embedded-workspace/scripts/workspace_ops.py restore "D:/projects/example" "记录文件路径"
+python embedded-workspace/scripts/workspace_ops.py restore "D:/projects/example" "记录文件路径" --apply
+```
+
+内容变化或原路径被占用时拒绝恢复。恢复只调整文件位置，之后检查索引。执行中断时先检查 pending 记录和当前路径，不盲目重跑。移动记录不等于完整备份。
+
+## 验证与边界
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+测试覆盖规则生成与保留、预览、移动、恢复、中文及空格路径、受保护文件、冲突、内容变化和失败清理。
+
+初始化不创建固件工程、不编译、不烧录、不初始化 Git、不提交、不发布。只有明确要求建立烧录流程且硬件可用时才实际验证；无法执行的硬件验证报告为 NOT_RUN。
