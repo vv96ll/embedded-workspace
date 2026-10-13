@@ -20,6 +20,14 @@ git clone https://github.com/vv96ll/embedded-workspace.git
 
 工具未刷新 Skill 列表时开启新会话。桌面聊天应用与编码 Agent 的能力可能不同，详见[适配说明](embedded-workspace/references/agent-adapters.md)。
 
+## 更新已安装的 Skill
+
+直接调用本 Skill 的更新模式即可：
+
+> 调用 embedded-workspace，更新这个 Skill。
+
+Skill 会从上游 main 获取更新并同步当前安装，保留本地修改，不更新已有项目的 AGENTS.md。执行需要网络及安装目录写权限。普通调用不检查更新；其他 Agent 的安装仅在要求时同步。不支持自动发现的工具需先明确加载 SKILL.md。
+
 ## 通过 Agent 使用
 
 - “使用 embedded-workspace 初始化指定路径的产品工作区，不创建固件工程、不移动已有资料。”
@@ -71,22 +79,20 @@ python embedded-workspace/scripts/workspace_ops.py init "D:/projects/example"
 ```
 
 ```powershell
-python embedded-workspace/scripts/workspace_ops.py move "D:/projects/example" plan.json
 python embedded-workspace/scripts/workspace_ops.py move "D:/projects/example" plan.json --apply
 ```
 
-第一条预览，第二条执行。目标父目录按需创建。脚本不负责理解资料或更新 Markdown 索引，这些由 Agent 完成。脚本拒绝目录、受保护根目录文件、链接、越界路径及覆盖已有目标。
+明确的整理任务直接加 --apply 执行；需要预览时去掉 --apply，不要求每批运行两次。目标父目录按需创建。脚本不负责理解资料或更新 Markdown 索引，这些由 Agent 完成。脚本拒绝目录、受保护根目录文件、链接、越界路径及覆盖已有目标。
 
 ## 恢复移动
 
 记录保存在 .workspace-ops/moves-<id>.json，包含文件 SHA-256。使用命令输出的实际记录路径：
 
 ```powershell
-python embedded-workspace/scripts/workspace_ops.py restore "D:/projects/example" "记录文件路径"
 python embedded-workspace/scripts/workspace_ops.py restore "D:/projects/example" "记录文件路径" --apply
 ```
 
-内容变化或原路径被占用时拒绝恢复。恢复只调整文件位置，之后检查索引。执行中断时先检查 pending 记录和当前路径，不盲目重跑。移动记录不等于完整备份。
+预览可选。哈希用于恢复时判断文件是否变化，普通复制不再额外重复哈希比对。内容变化或原路径被占用时拒绝恢复。恢复只调整文件位置，之后更新受影响的索引。执行中断时检查 pending 记录和当前路径。
 
 ## 验证与边界
 
@@ -94,6 +100,8 @@ python embedded-workspace/scripts/workspace_ops.py restore "D:/projects/example"
 python -m unittest discover -s tests -v
 ```
 
-测试覆盖规则生成与保留、预览、移动、恢复、中文及空格路径、受保护文件、冲突、内容变化和失败清理。
+修改脚本行为时运行这些测试；仅修改说明或规则时查看差异即可。测试覆盖规则生成与保留、预览、移动、恢复、中文及空格路径、受保护文件、冲突、内容变化和失败清理。
+
+开发规则以效率为先：明确任务直接做，复用已有环境与脚本，只构建和测试受影响部分一次，成功后停止。无需反复初始化、重新哈希或添加没有实际收益的测试及审计流程。
 
 初始化不创建固件工程、不编译、不烧录、不初始化 Git、不提交、不发布。只有明确要求建立烧录流程且硬件可用时才实际验证；无法执行的硬件验证报告为 NOT_RUN。

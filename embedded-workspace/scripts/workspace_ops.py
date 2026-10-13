@@ -98,9 +98,6 @@ def move_without_overwrite(src, dst):
         if created and dst.exists():
             dst.unlink()
         raise
-    if digest(src) != digest(dst):
-        dst.unlink()
-        raise ValueError('Copy verification failed; source preserved')
     shutil.copystat(src, dst)
     src.unlink()
 

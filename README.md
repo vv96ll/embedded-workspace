@@ -12,7 +12,6 @@ Copy `embedded-workspace/` into your agent's documented skill location, or expli
 
 ```text
 python embedded-workspace/scripts/workspace_ops.py init /path/to/workspace
-python embedded-workspace/scripts/workspace_ops.py move /path/to/workspace plan.json
 python embedded-workspace/scripts/workspace_ops.py move /path/to/workspace plan.json --apply
 python embedded-workspace/scripts/workspace_ops.py restore /path/to/workspace record.json --apply
 ```
@@ -22,6 +21,14 @@ Move plans contain workspace-relative `source` and `destination` fields. The age
 ## Installation
 
 Clone `https://github.com/vv96ll/embedded-workspace.git`. Copy the inner `embedded-workspace/` folder into your agent's documented skill directory, not the entire repository. For default Codex, use `~/.codex/skills/embedded-workspace/` (respect configured CODEX_HOME). For Claude Code, use its documented user or project skill location, such as `~/.claude/skills/embedded-workspace/` or `.claude/skills/embedded-workspace/`. Other agents can read SKILL.md explicitly if skill discovery is unavailable. Start a new session if the catalog does not refresh. Desktop chat apps may not have coding agents' filesystem capabilities.
+
+## Updating an installed skill
+
+Invoke this skill's update mode:
+
+> Use embedded-workspace to update itself.
+
+The skill fetches upstream main and updates the active installation while preserving local edits and existing project AGENTS.md files. Network and installation write access are needed. Normal calls do not check for updates; other installations are updated only when requested. Agents without automatic discovery must first load SKILL.md explicitly.
 
 ## Agent requests
 
@@ -39,10 +46,10 @@ Use a UTF-8 JSON file with workspace-relative paths:
 [{"source":"manual.pdf","destination":"hardware/references/component/manual.pdf"}]
 ```
 
-Quote paths containing spaces. The move command without --apply previews; --apply executes. Missing destination parents are created automatically. The helper does not classify content or update Markdown indexes; the agent handles those steps. It refuses protected root files, directories, links, path escapes, and existing destinations.
+Quote paths containing spaces. Use --apply directly for clear requested moves; omit it for an optional preview. Missing destination parents are created automatically. The helper does not classify content or update Markdown indexes; the agent handles those steps. It refuses protected root files, directories, links, path escapes, and existing destinations.
 
-Records with hashes are written under `.workspace-ops/moves-<id>.json`. Pass the actual printed record path to restore, first without --apply to preview. Restore refuses changed files or occupied original paths. Review indexes afterward. Following interruption, inspect pending entries and actual paths before retrying; records are not full backups.
+Records with hashes are written under `.workspace-ops/moves-<id>.json`. Pass the printed record path with --apply to restore; preview is optional. Hashes protect restoration against changed files; routine copying does not perform an extra hash comparison. Restore refuses changed files or occupied original paths. Update affected indexes afterward. Following interruption, inspect pending entries and actual paths before retrying.
 
 ## Validation
 
-Run `python -m unittest discover -s tests -v`. Current automated execution covers Windows; Linux and macOS have not been tested. Initialization preserves existing files; merging existing rules and alternate layouts is agent-assisted. It does not build, program hardware, initialize Git, commit, or publish. Hardware validation unavailable for a requested programming workflow must be reported as NOT_RUN.
+For helper code changes, run `python -m unittest discover -s tests -v`; prose-only changes need a diff review. Trust successful helper output instead of repeating initialization or rehashing files. Development rules favor direct execution, existing scripts, one affected build/test pass, and no speculative tests or mandatory audit process. Current automated execution covers Windows; Linux and macOS have not been tested. Initialization preserves existing files; merging existing rules and alternate layouts is agent-assisted. It does not build, program hardware, initialize Git, commit, or publish. Report unavailable hardware checks as NOT_RUN.

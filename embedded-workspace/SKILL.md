@@ -1,6 +1,6 @@
 ---
 name: embedded-workspace
-description: Initialize embedded product workspaces, generate shared agent guidance and material indexes, and organize loose root materials by purpose. Use for workspace setup, structure completion, or requested root-file organization across AI agents.
+description: Initialize embedded product workspaces, generate shared agent guidance and material indexes, organize root materials, or update this installed skill. Use for workspace setup, file organization, or requests such as "update embedded-workspace", "更新这个 Skill", and "调用 embedded-workspace 更新 Skill".
 ---
 
 # Embedded Workspace
@@ -9,7 +9,7 @@ Manage a product workspace containing requirements, hardware, firmware, companio
 
 ## Scope and discovery
 
-- Select initialize, complete, or organize mode from the request. Initialization alone does not include moving existing materials, creating firmware projects, importing SDKs, programming hardware, or committing Git changes.
+- Select initialize, complete, organize, or update mode from the request. For update mode, go directly to Update this skill; do not initialize or organize the user's workspace. Initialization alone does not include moving existing materials, creating firmware projects, importing SDKs, programming hardware, or committing Git changes.
 - Resolve the workspace root; read existing root guidance and README, then inspect immediate entries and relevant subdirectories only.
 - Preserve established directory names, projects, repository boundaries, user rules, and unrelated files. Map existing names in README instead of renaming them.
 - Read [layout-and-classification.md](references/layout-and-classification.md) for destinations and index conventions. Read [agent-adapters.md](references/agent-adapters.md) when creating an agent entry point or installing this skill.
@@ -33,13 +33,22 @@ Manage a product workspace containing requirements, hardware, firmware, companio
 - Preserve project folders, repositories, packages, and archives as units. Do not automatically unpack archives or move project directories.
 - Keep root configuration, guidance, manifests, build files, and entry points in place. Check relevant references before moving files used by projects or scripts.
 - Prepare a JSON move plan: `[{"source":"loose-file.pdf","destination":"hardware/references/device/loose-file.pdf"}]` with workspace-relative paths.
-- Run `workspace_ops.py move <root> <plan.json>` to preview, then add `--apply` to execute authorized organization. Preview is an internal check, not a mandatory permission question.
+- Run `workspace_ops.py move <root> <plan.json> --apply` directly for clear, requested organization. Use preview only when it helps resolve an uncertain batch; do not execute every batch twice.
 - The helper rejects escapes, symlinks, protected root files, directories, and existing destinations. It records completed moves under `.workspace-ops/` with hashes. If interrupted, inspect its record and current files before retrying.
 - Update README's key-material index and affected document links. No duplicate deletion or automatic conflict replacement.
 
 ## Finish
 
-- Verify created files, index paths, and completed moves. Repeated initialization must preserve existing content.
-- For restoration, use `workspace_ops.py restore <root> <record.json>` to preview, then `--apply`. It checks hashes and refuses occupied original paths.
-- Run only checks meaningful to these file operations; no unrelated builds or hardware tests.
+
+- Trust successful helper output. Check only newly edited index links or reported failures; do not rehash files or rerun initialization after success.
+- Restore with `workspace_ops.py restore <root> <record.json> --apply`; use preview only when useful. The helper checks hashes and refuses occupied original paths.
+- For guidance-only edits, review the diff; run helper tests only when executable behavior changes. No unrelated builds or hardware tests.
 - Report changes, actual validation, and unresolved items concisely. Do not commit, push, or install globally unless requested.
+
+## Update this skill
+
+- Requests such as "更新这个 Skill" or "update embedded-workspace" invoke this mode. The upstream repository is https://github.com/vv96ll/embedded-workspace; use its main branch and install only the embedded-workspace/ folder.
+- Locate the active installation and reuse a suitable local checkout, or fetch a temporary checkout. Preserve local edits; when they differ from upstream, use the previous upstream version to identify customizations where available. Merge straightforward compatible changes and report unresolved conflicts rather than overwriting them. If no baseline exists, preserve uncertain differences.
+- Synchronize changed skill files, preserving unrelated installation files. Remove obsolete managed files only when their origin and unchanged content are known. Do not update other agents' installations unless requested.
+- Leave existing project AGENTS.md files unchanged. Report the installed source commit and update result; stop if already current. Do not commit or push local changes.
+- Normal workspace calls use the installed version without checking for updates.
