@@ -36,9 +36,9 @@ Manage a product workspace containing requirements, hardware, firmware, companio
 - Run `workspace_ops.py move <root> <plan.json> --apply` directly for clear, requested organization. Use preview only when it helps resolve an uncertain batch; do not execute every batch twice.
 - The helper rejects escapes, symlinks, protected root files, directories, and existing destinations. It records completed moves under `.workspace-ops/` with hashes. If interrupted, inspect its record and current files before retrying.
 - Update README's key-material index and affected document links. No duplicate deletion or automatic conflict replacement.
+- Group revisions of the same object and document type together. Track version and adoption status separately: current, pending, or superseded. New arrivals stay pending unless the user or an established project baseline identifies them as current; follow the version rules in layout-and-classification.md.
 
 ## Finish
-
 
 - Trust successful helper output. Check only newly edited index links or reported failures; do not rehash files or rerun initialization after success.
 - Restore with `workspace_ops.py restore <root> <record.json> --apply`; use preview only when useful. The helper checks hashes and refuses occupied original paths.

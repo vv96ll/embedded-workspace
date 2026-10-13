@@ -29,6 +29,15 @@ Keep module-specific assets, unit tests, dependencies, scripts, and build output
 
 README contains a workspace map and a key-material table with object, type, version/status, path/source. Use relative links for internal files and explicit paths for external installations. Add provenance URLs when known. Index key manuals, SDK packages, requirements baselines, and project entry points, not every asset. For a large index, use `docs/materials-index.md` and link it from README.
 
+## Material versions
+
+- Group the same object and document type under one directory, for example `hardware/schematics/main-board/MAIN_V1.3.pdf` and `MAIN_V1.4.pdf`. Keep original filenames and previous revisions. Match board/model identity before grouping; different variants are separate objects.
+- Index object, type, version, status, and path separately. Status is `current` (adopted baseline), `pending` (received but not adopted), or `superseded` (replaced baseline). Unknown version numbers remain unconfirmed; file timestamps do not determine adoption or version order.
+- A new arrival is pending unless the user's instruction or an established project baseline explicitly adopts it. When adopted, mark the previous current revision superseded and update the index; do not change firmware or SDK dependencies merely because a document arrived.
+- Use current materials by default. For a request comparing revisions, read the requested versions. If no current baseline exists or multiple conflicting revisions claim current status, ask only when choosing one affects the task; continue unrelated organization.
+- Superseded files may stay alongside current files. Move them into a local `archive/` only when requested or consistent with the project's existing convention; preserve files and update affected links. The root-file helper does not move already classified nested files; use ordinary file operations for that narrow archive task.
+- For identical names with different content, keep both using distinct version/source subdirectories when identity is known; otherwise leave the incoming file in place and report the conflict. Never overwrite or invent a version.
+
 ## Ambiguity
 
 A PDF can be a requirement, schematic, datasheet, or guide. A binary can be test input or a delivery. Read enough context to decide. Unknown archives stay in place. Same-name files are never overwritten, even if identical; report duplicates instead of deleting. Root scripts and configuration are not loose materials simply because they are files.

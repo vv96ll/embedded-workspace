@@ -18,7 +18,9 @@ Read root AGENTS.md for shared rules and firmware/AGENTS.md for firmware work. A
 
 ## Key materials and project entries
 
-| Object | Type | Version/status | Path/source |
-|---|---|---|---|
+| Object | Type | Version | Status | Path/source |
+|---|---|---|---|---|
 
 No project facts have been confirmed yet. Add verified entries as materials and projects arrive. Component documents belong under hardware/references/; original SDK packages under references/sdk/. Index externally installed SDK paths instead of copying them unnecessarily.
+
+Group revisions by object and document type. Status: current (adopted), pending (received), superseded (replaced). Newer files do not automatically become current. Keep previous versions and use the current baseline for development.

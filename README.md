@@ -40,6 +40,10 @@ No background watcher is installed. Core directories are requirements, hardware,
 
 ## Move plan and recovery
 
+### Material revisions
+
+Group revisions of the same object and document type, retaining original names. The index separates version from status: current (adopted), pending (received), or superseded (replaced). A new schematic stays pending unless the user or project baseline adopts it. On adoption, update the index and mark the old baseline superseded; retain its file. Optional local archive folders follow the project's convention. Agents use current materials by default and do not infer adoption from timestamps or silently update code dependencies. Example request: “Organize this new schematic revision; keep it pending.” Or: “Adopt this revision as current and mark the previous one superseded.”
+
 Use a UTF-8 JSON file with workspace-relative paths:
 
 ```json

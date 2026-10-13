@@ -32,6 +32,7 @@ Complete the requested task with the smallest reasonable change. Work autonomous
 ## Materials and Git
 - Organize loose root materials when requested. Preserve originals, projects, repository boundaries, root configuration, and unrelated changes.
 - Preserve conflicting files; check references only when moving executable or linked project files. Update key indexes and affected links.
+- Use the indexed current material revision. Group versions by object; keep new arrivals pending until adoption is explicit, retain superseded files, and never choose a baseline from timestamps alone.
 - Consult relevant lessons when needed; record reusable corrections concisely in project-local notes when requested or established by the project.
 - Initialize structure without automatically importing SDKs, programming devices, or publishing.
 - Commit, branch, tag, release, or push only when requested or explicitly required by the active workflow. Do not discard unrelated changes or rewrite shared history.
